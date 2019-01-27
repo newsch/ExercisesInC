@@ -29,7 +29,7 @@ int parseCard(char * cardName) {
             break;
         default:
             val = atoi(cardName);
-            if ((val < 1) || (val > 10)) {  // invalid number/character
+            if ((val < 1) || (val > 10)) {  /* invalid number/character */
                 return -1;
             }
     }
@@ -61,11 +61,11 @@ int main() {
     do {
         puts("Enter a card (A, K, Q, J, 1-10), or X to exit: ");
         scanf("%2s", cardName);
-        if (toupper(cardName[0]) == 'X') {  // continue and exit loop/program
+        if (toupper(cardName[0]) == 'X') {  /* continue and exit loop/program */
             continue;
         }
         val = parseCard(cardName);
-        if (val < 0) {  // try again
+        if (val < 0) {  /* try again */
             puts("I don't understand that value!");
             continue;
         }
