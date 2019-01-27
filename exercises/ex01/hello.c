@@ -2,7 +2,8 @@
 
 int main() {
     int x = 5;
-    printf("%d\n", x);
+    int y = x + 1;
+    printf("%d\n", y);
     return 0;
 }
 
@@ -50,5 +51,9 @@ int main() {
     movl    $1, %edi
     xorl    %eax, %eax
     call    __printf_chk
+
+4.  With the added `int y = x + 1;`, the unoptimized version stores 5 and adds
+    to it before passing it to `printf`, while the optimized version does the
+    math ahead of time and just passes 6 into `__printf_chk`.
 
 */
