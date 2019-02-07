@@ -14,7 +14,7 @@ int *foo() {
     int i;
     int array[SIZE];
 
-    printf("%p\n", array);
+    // printf("%p\n", array);
 
     for (i=0; i<SIZE; i++) {
         array[i] = 42;
@@ -26,7 +26,7 @@ void bar() {
     int i;
     int array[SIZE];
 
-    printf("%p\n", array);
+    // printf("%p\n", array);
 
     for (i=0; i<SIZE; i++) {
         array[i] = i;
@@ -60,4 +60,6 @@ int main()
   It doesn't like returning local variable locations to code with different scope.
 
 3. On execution, I see the two addresses of the arrays and no other output - not even empty line breaks.
+
+4. With both print statements commented out I don't get any output at all.
 */
