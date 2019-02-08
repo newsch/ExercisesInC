@@ -23,7 +23,6 @@ long int sum(int* a, int size) {
     long int s = 0;
     for (int i = 0; i < size; i++) {
         s += a[i];
-        printf("%i ", a[i]);
     }
     return s;
 }
@@ -42,7 +41,7 @@ int main() {
         }
         // check against array length
         if (i >= ARRAY_LEN) {
-            fprintf(stderr, "Reached maximum number of numbers\n");
+            fprintf(stderr, "Oops! I can't store any more numbers, recompile me with a larger ARRAY_LEN :(\n");
             return 1;
         }
         // check against buffer length
@@ -58,9 +57,8 @@ int main() {
             return 1;
         }
         array[i] = val;
-        printf("Value: %i\n", val);
     }
     s = sum(array, i);  // only sum entered numbers (up to i, including ^D)
-    printf("Sum: %li\n", s);
+    printf("%li\n", s);
     return 0;
 }
