@@ -35,16 +35,22 @@ int main() {
 
     printf("Enter up to %i integers (of up to an arbitrary %i digits) and ^D to sum.\n", ARRAY_LEN, BUFFER_LEN - 2);
     int i;
-    for (i = 0; i < ARRAY_LEN; i++) {
+    for (i = 0; i < ARRAY_LEN + 1; i++) {
         // check for EOF to stop
         if (fgets(input, BUFFER_LEN, stdin) == NULL) {
             break;
+        }
+        // check against array length
+        if (i >= ARRAY_LEN) {
+            fprintf(stderr, "Reached maximum number of numbers\n");
+            return 1;
         }
         // check against buffer length
         if (strlen(input) == BUFFER_LEN - 1 && input[BUFFER_LEN - 2] != '\n') {
             fprintf(stderr, "Input exceeded buffer\n");
             return 1;
         }
+
         int val = atoi(input);
         // check int-ness of input
         if (val == 0 && strncmp(input, "0\n", 3)) {
