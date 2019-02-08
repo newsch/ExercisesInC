@@ -48,7 +48,7 @@ int main()
 
 /* ex02 answers
 
-1. Program prints the locations of two arrays defined locally in functions, and then prints the contents of the arrays locations in memory (presumably the same space, with the contents of the second array overwriting the contents of the first array after deallocation).
+1. Program prints the locations of two arrays defined locally in functions, and then prints the contents of the arrays locations in memory (presumably the same space, with the contents of the second array overwriting the contents of the first array after deallocation). I would expect to see the contents of the array in bar() printed, 0-4.
 
 2. On compilation, I get the following warning:
   ```
