@@ -33,8 +33,14 @@ s: string
 returns: string
 */
 char *reverse_string(char *s) {
-    //TODO: Fill this in.
-    return "";
+    size_t s_null_index = strlen(s);
+    char* r = calloc(s_null_index, sizeof(char));
+    assert(r != NULL);
+    r[s_null_index] = '\0';
+    for (int i=0; i<s_null_index; i++) {
+        r[i] = s[s_null_index - 1 - i];
+    }
+    return r;
 }
 
 /* ctoi: Converts a character to integer.
@@ -53,8 +59,8 @@ i: integer 0 to 9
 returns: character '0' to '9'
 */
 char itoc(int i) {
-    //TODO: Fill this in, with an appropriate assertion.
-    return '0';
+    assert((i >= 0 && i <= 9));
+    return '0' + i;
 }
 
 /* add_digits: Adds two decimal digits, returns the total and carry.
@@ -70,7 +76,14 @@ carry: pointer to char
 
 */
 void add_digits(char a, char b, char c, char *total, char *carry) {
-    //TODO: Fill this in.
+    int sum = ctoi(a)+ctoi(b)+ctoi(c);  // can't be greater than 19
+    if (sum >= 10) {
+        *total = itoc(sum - 10);
+        *carry = '1';
+    } else {
+        *total = itoc(sum);
+        *carry = '0';
+    }
 }
 
 /* Define a type to represent a BigInt.
@@ -158,6 +171,7 @@ void test_reverse_string() {
     } else {
         printf("reverse_string failed\n");
     }
+    printf("Expected:\t321\nReceived:\t%s\n", t);
 }
 
 void test_itoc() {
@@ -177,24 +191,27 @@ void test_add_digits() {
     } else {
         printf("add_digits failed\n");
     }
+    printf("Expected:\ttotal = 2, carry = 1\nReceived:\ttotal = %c, carry = %c\n", total, carry);
 }
 
 void test_add_bigint() {
     char *s = "1";
-    char *t = "99999999999999999999999999999999999999999999";
+    char *t   = "99999999999999999999999999999999999999999999";
     char *res = "000000000000000000000000000000000000000000001";
 
-    BigInt big1 = make_bigint(s);    
+    BigInt big1 = make_bigint(s);
     BigInt big2 = make_bigint(t);
     BigInt big3 = malloc(100);
 
-	add_bigint(big1, big2, '0', big3);
-    
+    add_bigint(big1, big2, '0', big3);
+
     if (strcmp(big3, res) == 0) {
         printf("add_bigint passed\n");
     } else {
         printf("add_bigint failed\n");
     }
+    puts("Expected:"); print_bigint(res);
+    puts("\nReceived:"); print_bigint(big3); puts("");
 }
 
 int main (int argc, char *argv[])
@@ -205,6 +222,6 @@ int main (int argc, char *argv[])
 
     //TODO: When you have the first three functions working,
     //      uncomment the following, and it should work.
-    // test_add_bigint();
+    test_add_bigint();
     return 0;
 }

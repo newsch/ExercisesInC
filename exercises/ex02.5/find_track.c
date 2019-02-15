@@ -7,6 +7,7 @@ Modified version of an example from Chapter 2.5 of Head First C.
 #include <stdio.h>
 #include <stdlib.h>
 #include <string.h>
+#include <regex.h>
 
 #define NUM_TRACKS 5
 
@@ -34,10 +35,23 @@ void find_track(char search_for[])
 
 // Finds all tracks that match the given pattern.
 //
-// Prints track number and title.
+// Uses ignore case flag, and exits on errors.
 void find_track_regex(char pattern[])
 {
-    // TODO: fill this in
+    regex_t re;
+    int res = regcomp(&re, pattern, (REG_ICASE | REG_NOSUB));  // ignore case and get success/fail
+    if (res != 0) {
+        fprintf(stderr, "Error: regcomp returned %i\n"
+        "See Regular Expression reference for more info: "
+        "http://pubs.opengroup.org/onlinepubs/7908799/xbd/re.html\n", res);
+        exit(1);
+    }
+    for (int i=0; i<NUM_TRACKS; i++) {
+        if (regexec(&re, tracks[i], 0, NULL, 0) == 0) {
+            printf("Track %i: '%s'\n", i, tracks[i]);
+        }
+    }
+    regfree(&re);
 }
 
 // Truncates the string at the first newline, if there is one.
@@ -58,8 +72,8 @@ int main (int argc, char *argv[])
     fgets(search_for, 80, stdin);
     rstrip(search_for);
 
-    find_track(search_for);
-    //find_track_regex(search_for);
+    // find_track(search_for);
+    find_track_regex(search_for);
 
     return 0;
 }
