@@ -16,7 +16,7 @@ static struct argp_option options[] = {
     { 0 }  // terminating entry
 };
 
-// internal representation
+// internal representation of arg state
 struct arguments {
     int append, ignoreInterrups;  // flags
 };
@@ -33,6 +33,9 @@ static error_t parse_opt(int key, char* arg, struct argp_state* state) {
         case 'i':
             arguments->ignoreInterrups = 1;
             break;
+        case ARGP_KEY_ARG:
+            printf("File: \"%s\"\n", arg);
+            break;
         default:
             return ARGP_ERR_UNKNOWN;
     }
@@ -40,6 +43,8 @@ static error_t parse_opt(int key, char* arg, struct argp_state* state) {
 }
 
 static struct argp argp = { options, parse_opt, args_doc, doc };
+
+void appendToFile(char* fileName);  // TODO: fill this out
 
 int main(int argc, char* argv[]) {
     struct arguments arguments;
@@ -63,4 +68,7 @@ int main(int argc, char* argv[]) {
           arguments.ignoreInterrups ? "yes" : "no");
 
     // TODO: implement tee
+    // TODO: capture filenames in array
+    // TODO: allow unknown number of filenames
+    // TODO: map stdin to stdout and functions
 }
