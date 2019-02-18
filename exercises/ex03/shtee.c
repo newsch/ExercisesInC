@@ -44,7 +44,7 @@ static error_t parse_opt(int key, char* arg, struct argp_state* state) {
 
 static struct argp argp = { options, parse_opt, args_doc, doc };
 
-void appendToFile(char* fileName);  // TODO: fill this out
+void openFile(char* fileName, int append, FILE* );  // TODO: fill this out
 
 int main(int argc, char* argv[]) {
     struct arguments arguments;
@@ -68,7 +68,25 @@ int main(int argc, char* argv[]) {
           arguments.ignoreInterrups ? "yes" : "no");
 
     // TODO: implement tee
-    // TODO: capture filenames in array
-    // TODO: allow unknown number of filenames
+    // TODO: add pointers of args to array for filenames
     // TODO: map stdin to stdout and functions
+    char* fileNames[] = {"log.txt", "foo.bar"};
+    int numFiles = 2;
+
+    // open files
+    FILE* files[numFiles];
+    const char* mode = arguments.append ? "a" : "w";  // set mode for fopen
+    for (int i=0; i<numFiles; i++) {
+        files[i] = fopen(fileNames[i], mode);
+    }
+
+    // do thing
+    for (int i=0; i<numFiles; i++) {
+        fputs("helloo\n", files[i]);
+    }
+
+    // close files
+    for (int i=0; i<numFiles; i++) {
+        fclose(files[i]);
+    }
 }

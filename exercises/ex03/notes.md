@@ -12,3 +12,6 @@ cmdline interface options:
 - [argp](https://www.gnu.org/software/libc/manual/html_node/Argp.html): python `argparse`-ish, more features (automatic help/version)
 - ISO C: `int main (int argc, char *argv[])`
 - UNIX (non-POSIX): `int main (int argc, char *argv[], char *envp[])`
+
+- interrupt signal catching: `signal` and `sighandler`
+  - https://stackoverflow.com/questions/19618579/catching-all-signals-in-linux
