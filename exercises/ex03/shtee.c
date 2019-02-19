@@ -2,7 +2,7 @@
 #include <stdio.h>
 #include <stdlib.h>
 
-const char* argp_program_version = "shtee alpha-0.1";
+const char* argp_program_version = "shtee alpha-0.2";
 const char* argp_program_bug_address = "evan@new-schmidt.com";
 
 static char doc[] = "shtee -- a tee clone";
@@ -19,6 +19,8 @@ static struct argp_option options[] = {
 // internal representation of arg state
 struct arguments {
     int append, ignoreInterrups;  // flags
+    int numFiles;  // number of files passed in
+    char** fileNames;  // array of string pointers
 };
 
 // parse an option
@@ -35,6 +37,8 @@ static error_t parse_opt(int key, char* arg, struct argp_state* state) {
             break;
         case ARGP_KEY_ARG:
             printf("File: \"%s\"\n", arg);
+            arguments->fileNames[arguments->numFiles] = arg;
+            arguments->numFiles++;
             break;
         default:
             return ARGP_ERR_UNKNOWN;
@@ -47,11 +51,15 @@ static struct argp argp = { options, parse_opt, args_doc, doc };
 void openFile(char* fileName, int append, FILE* );  // TODO: fill this out
 
 int main(int argc, char* argv[]) {
+    // prep argument storage struct
+    char* p[argc];  // allocate array of string pointers for filenames, will never be larger than number of arguments
     struct arguments arguments;
     arguments.append = 0;
     arguments.ignoreInterrups = 0;
+    arguments.numFiles = 0;
+    arguments.fileNames = malloc(sizeof(char*) * argc);
 
-    // print argc and argv
+    // print argc and argv for debugging
     printf("argc: %i, argv: [", argc);
     for (int i = 0; i<argc; i++) {
         printf("\"%s\"", argv[i]);
@@ -61,32 +69,36 @@ int main(int argc, char* argv[]) {
     }
     printf("]\n");
 
-    argp_parse(&argp, argc, argv, 0, 0, &arguments);
-    // print state
+    argp_parse(&argp, argc, argv, 0, 0, &arguments);  // parse arguments
+
+    // print state for debugging
     printf ("append = %s\nignoreInterrupts = %s\n",
           arguments.append ? "yes" : "no",
           arguments.ignoreInterrups ? "yes" : "no");
 
     // TODO: implement tee
-    // TODO: add pointers of args to array for filenames
-    // TODO: map stdin to stdout and functions
-    char* fileNames[] = {"log.txt", "foo.bar"};
-    int numFiles = 2;
+    // TODO: map stdin to stdout and files
 
-    // open files
-    FILE* files[numFiles];
+    // char* fileNames[] = {"log.txt", "foo.bar"};
+    int numOuts = arguments.numFiles + 1;
+
+    // prep outputs
+    // outs[0] is stdout, rest are files from args
+    FILE* outs[numOuts];
+    outs[0] = stdout;
     const char* mode = arguments.append ? "a" : "w";  // set mode for fopen
-    for (int i=0; i<numFiles; i++) {
-        files[i] = fopen(fileNames[i], mode);
+    // open files and add to outs
+    for (int j=0; j<arguments.numFiles; j++) {
+        outs[j+1] = fopen(arguments.fileNames[j], mode);
     }
 
     // do thing
-    for (int i=0; i<numFiles; i++) {
-        fputs("helloo\n", files[i]);
+    for (int i=0; i<numOuts; i++) {
+        fputs("helloo\n", outs[i]);
     }
 
-    // close files
-    for (int i=0; i<numFiles; i++) {
-        fclose(files[i]);
+    // close files (NOT stdout)
+    for (int i=1; i<numOuts; i++) {
+        fclose(outs[i]);
     }
 }
