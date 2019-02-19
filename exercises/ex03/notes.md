@@ -15,3 +15,4 @@ cmdline interface options:
 
 - interrupt signal catching: `signal` and `sighandler`
   - https://stackoverflow.com/questions/19618579/catching-all-signals-in-linux
+- real tee with `-i` ignores `^C` (signal), but not `^D` (EOF) or `^Z` (bash/shell level?)

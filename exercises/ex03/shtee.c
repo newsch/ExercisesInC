@@ -77,7 +77,6 @@ int main(int argc, char* argv[]) {
           arguments.ignoreInterrups ? "yes" : "no");
 
     // TODO: implement tee
-    // TODO: map stdin to stdout and files
 
     // char* fileNames[] = {"log.txt", "foo.bar"};
     int numOuts = arguments.numFiles + 1;
@@ -92,9 +91,16 @@ int main(int argc, char* argv[]) {
         outs[j+1] = fopen(arguments.fileNames[j], mode);
     }
 
-    // do thing
-    for (int i=0; i<numOuts; i++) {
-        fputs("helloo\n", outs[i]);
+    // read from stdin character by character and write until EOF received
+    char c;
+    while (1) {
+        c = getchar();
+        if (c == EOF) {
+            break;
+        }
+        for (int i=0; i<numOuts; i++) {
+            fputc(c, outs[i]);
+        }
     }
 
     // close files (NOT stdout)
