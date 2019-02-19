@@ -2,6 +2,8 @@
 #include <stdio.h>
 #include <stdlib.h>
 
+// #define DEBUG  // print more debugging info
+
 const char* argp_program_version = "shtee alpha-0.2";
 const char* argp_program_bug_address = "evan@new-schmidt.com";
 
@@ -35,8 +37,10 @@ static error_t parse_opt(int key, char* arg, struct argp_state* state) {
         case 'i':
             arguments->ignoreInterrups = 1;
             break;
-        case ARGP_KEY_ARG:
+        case ARGP_KEY_ARG:  // args, not opts (files)
+            #ifdef DEBUG
             printf("File: \"%s\"\n", arg);
+            #endif
             arguments->fileNames[arguments->numFiles] = arg;
             arguments->numFiles++;
             break;
@@ -52,14 +56,16 @@ void openFile(char* fileName, int append, FILE* );  // TODO: fill this out
 
 int main(int argc, char* argv[]) {
     // prep argument storage struct
-    char* p[argc];  // allocate array of string pointers for filenames, will never be larger than number of arguments
+    char* p[argc];
     struct arguments arguments;
     arguments.append = 0;
     arguments.ignoreInterrups = 0;
     arguments.numFiles = 0;
+    // allocate array of string pointers for filenames, will never be larger
+    // than number of arguments
     arguments.fileNames = malloc(sizeof(char*) * argc);
 
-    // print argc and argv for debugging
+    #ifdef DEBUG  // print argc and argv
     printf("argc: %i, argv: [", argc);
     for (int i = 0; i<argc; i++) {
         printf("\"%s\"", argv[i]);
@@ -68,17 +74,19 @@ int main(int argc, char* argv[]) {
         }
     }
     printf("]\n");
+    #endif
 
     argp_parse(&argp, argc, argv, 0, 0, &arguments);  // parse arguments
 
-    // print state for debugging
+    #ifdef DEBUG  // print state
     printf ("append = %s\nignoreInterrupts = %s\n",
           arguments.append ? "yes" : "no",
           arguments.ignoreInterrups ? "yes" : "no");
+    #endif
 
     // TODO: implement tee
+    // TODO: catch interrupt
 
-    // char* fileNames[] = {"log.txt", "foo.bar"};
     int numOuts = arguments.numFiles + 1;
 
     // prep outputs
