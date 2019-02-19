@@ -13,6 +13,11 @@ cmdline interface options:
 - ISO C: `int main (int argc, char *argv[])`
 - UNIX (non-POSIX): `int main (int argc, char *argv[], char *envp[])`
 
+interrupt ignoring:
 - interrupt signal catching: `signal` and `sighandler`
   - https://stackoverflow.com/questions/19618579/catching-all-signals-in-linux
 - real tee with `-i` ignores `^C` (signal), but not `^D` (EOF) or `^Z` (bash/shell level?)
+- http://man7.org/linux/man-pages/man7/signal.7.html
+
+Debugging:
+- [GDB ref card](https://www.cs.princeton.edu/courses/archive/fall16/cos432/hw2/gdb-refcard.pdf)
