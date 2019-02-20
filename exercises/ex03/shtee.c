@@ -1,16 +1,27 @@
+/* shtee, a tee clone
+Made by Evan New-Schmidt.
+*/
 #include <argp.h>
 #include <signal.h>
 #include <stdio.h>
 #include <stdlib.h>
 
+
 // #define DEBUG  // print more debugging info
 
+// program globals
+FILE** outs;  // array of FILE* outputs
+int numOuts = 0;  // number of FILE* outputs
+
+
+// argp configuration
+
+// globals for argp
 const char* argp_program_version = "shtee beta-0.3";
 const char* argp_program_bug_address = "evan@new-schmidt.com";
-
+// doc strings
 static char doc[] = "shtee -- a tee clone";
 static char args_doc[] = "[FILE1]...";
-
 // commandline options
 static struct argp_option options[] = {
     {"append", 'a', 0, OPTION_ARG_OPTIONAL, "append to the given FILEs, do not overwrite"},
@@ -18,15 +29,13 @@ static struct argp_option options[] = {
     {"foobar", 0, 0, OPTION_DOC, "neat"},
     { 0 }  // terminating entry
 };
-
 // internal representation of arg state
 struct arguments {
     int append, ignoreInterrupts;  // flags
     int numFiles;  // number of files passed in
     char** fileNames;  // array of string pointers
 };
-
-// parse an option
+// function for parse loop
 static error_t parse_opt(int key, char* arg, struct argp_state* state) {
     // extract arguments from state
     struct arguments *arguments = state->input;
@@ -50,29 +59,29 @@ static error_t parse_opt(int key, char* arg, struct argp_state* state) {
     }
     return 0;
 }
+static struct argp argp = { options, parse_opt, args_doc, doc };
 
-FILE** outs;  // array of FILE* outputs
-int numOuts = 0;  // number of FILE* outputs
 
-// close files (NOT stdout)
-void closeFiles() {
+// interrupt handler to close files before exiting
+void interruptHandler(int signal) {
+    #ifdef DEBUG
+    printf("Handled signal %i\n", signal);
+    #endif
+    cleanup();
+    exit(0);
+}
+
+// close all opened files (NOT stdout) and free outs array
+void cleanup() {
     for (int i=1; i<numOuts; i++) {
         fclose(outs[i]);
     }
+    free(outs);
     #ifdef DEBUG
     printf("Closed %i files\n", numOuts-1);
     #endif
 }
 
-void interruptHandler(int signal) {
-    #ifdef DEBUG
-    printf("Handled signal %i\n", signal);
-    #endif
-    closeFiles();
-    exit(0);
-}
-
-static struct argp argp = { options, parse_opt, args_doc, doc };
 
 int main(int argc, char* argv[]) {
     // prep argument storage struct
@@ -104,9 +113,6 @@ int main(int argc, char* argv[]) {
           arguments.ignoreInterrupts ? "yes" : "no");
     #endif
 
-    // TODO: pass errors on from malloc, fopen, fclose
-    // TODO: comment functions and break into more functions?
-
     // register signal handlers
     if (arguments.ignoreInterrupts) {
         signal(SIGINT, SIG_IGN);
@@ -134,6 +140,7 @@ int main(int argc, char* argv[]) {
         outs[1+j] = fopen(arguments.fileNames[j], mode);
         numOuts++;
     }
+    free(arguments.fileNames);  // free fileNames since we're done with them
 
     // read from stdin character by character and write until EOF received
     char c;
@@ -147,6 +154,6 @@ int main(int argc, char* argv[]) {
         }
     }
 
-    closeFiles();
+    cleanup();  // close files and free outs
     return 0;
 }
