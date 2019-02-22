@@ -1,5 +1,21 @@
 /* shtee, a tee clone
 Made by Evan New-Schmidt.
+
+RE: questions
+
+3. What worked, what slowed you down? What would you do differently next time?
+  Argp was pretty useful, but understanding the documentation took a long time.
+  Getopt would have been shorter and faster for this usecase, but I'm glad I
+  learned how argp works. I ran into the issue of cached file changes not being
+  written to on interrupts/errors, and I had to refactor a bit to save the
+  files array in the global space and allocate it after startup in order to be
+  able to close all of the files on a signal. Assigning array/pointer values to
+  structs was also confusing.
+
+4. Apple uses a linked list for managing the list of filenames. Both Apple and
+  GNU use getopt, not argp. Both also read more than a single character (Apple
+  reads 8KiB) in the input/output loop. Both also do more error checking than I
+  do.
 */
 #include <argp.h>
 #include <signal.h>
