@@ -1,7 +1,7 @@
 /* Example code for Exercises in C.
 
 This program shows a way to represent a BigInt type (arbitrary length integers)
-using C strings, with numbers represents as a string of decimal digits in reverse order.
+using C strings, with numbers represented as a string of decimal digits in reverse order.
 
 Follow these steps to get this program working:
 
