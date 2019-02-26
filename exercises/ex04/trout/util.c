@@ -7,7 +7,7 @@ void err_doit (int errnoflag, int level, char *fmt, va_list ap)
 
   errno_save = errno;             /* value caller might want printed */
   vsnprintf (buf, sizeof(buf), fmt, ap);
-  n = strnlen (buf);
+  n = strnlen (buf, sizeof(buf));
   if (errnoflag)
     snprintf (buf+n, sizeof(buf) - n, ": %s", strerror(errno_save));
   strcat (buf, "\n");
@@ -53,7 +53,7 @@ char *sock_ntop_host(const struct sockaddr *sa, socklen_t salen)
   }
   case AF_UNIX: {
     struct sockaddr_un      *unp = (struct sockaddr_un *) sa;
-    
+
     /* OK to have no pathname bound to the socket: happens on
        every connect() unless client calls bind() first. */
     if (unp->sun_path[0] == 0)
@@ -84,7 +84,7 @@ void sock_set_port(struct sockaddr *sa, socklen_t salen, int port)
   switch (sa->sa_family) {
     case AF_INET: {
       struct sockaddr_in	*sin = (struct sockaddr_in *) sa;
-    
+
       sin->sin_port = port;
       return;
     }
@@ -181,7 +181,7 @@ void *Malloc(size_t size)
 void *Calloc(size_t n, size_t size)
 {
   void	*ptr;
-  
+
   if ( (ptr = calloc(n, size)) == NULL)
     err_sys("calloc error");
   return(ptr);
@@ -263,7 +263,7 @@ Host_serv(const char *host, const char *serv, int family, int socktype)
 ssize_t Read(int fd, void *ptr, size_t nbytes)
 {
   ssize_t n;
- 
+
   if ( (n = read(fd, ptr, nbytes)) == -1)
     err_sys("read error");
   return(n);
