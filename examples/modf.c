@@ -48,7 +48,7 @@ void test_get_int_part()
     double *int_part = get_int_part(array, length);
 
     for (int i=0; i<length; i++) {
-        printf("%.18lf  %.18lf\n", int_part[i], expected[i]);
+        // printf("%.18lf  %.18lf\n", int_part[i], expected[i]);
         assert(int_part[i] == expected[i]);
     }
 }
