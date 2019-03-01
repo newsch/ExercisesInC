@@ -1,3 +1,6 @@
+#ifndef TROUT_H
+#define TROUT_H "trout.h"
+
 #include <sys/types.h>
 #include <sys/socket.h>
 #include <sys/time.h>
@@ -17,13 +20,15 @@
 #include <getopt.h>
 #include <sys/un.h>
 #include <stdarg.h>
+#include <stdint.h>
 #include <syslog.h>
+#include <unistd.h>
 
 #define MAXLINE 4096
 #define BUFSIZE 1500
 
 typedef struct rec {                /* outgoing UDP data */
-  u_short seq;          /* sequence number */
+  unsigned short seq;          /* sequence number */
 } Rec;
 
 typedef struct timeval Timeval;
@@ -34,6 +39,24 @@ typedef struct sockaddr Sockaddr;
 typedef	void Sigfunc(int);        /* for signal handlers */
 
 #define max(a,b) ((a) > (b) ? (a) : (b))
+
+/* variables we might want to configure */
+extern int max_ttl;
+extern int nprobes;
+
+extern Sockaddr *sasend;    /* socket addresses for various purposes */
+extern Sockaddr *sarecv;
+extern Sockaddr *salast;
+extern Sockaddr *sabind;
+
+extern socklen_t salen;                    /* length of a socket address */
+extern int datalen;         /* length of the data in a datagram */
+
+extern unsigned short sport;                      /* source UDP port # */
+extern unsigned short dport;        /* destination port -- hopefully unused */
+                                    /* 668 = the neighbor of the beast */
+
+void loop_ttl();
 
 /* the following are prototypes for the Stevens utilities in util.c */
 
@@ -61,4 +84,4 @@ ssize_t Recvfrom(int fd, void *ptr, size_t nbytes, int flags,
 void err_sys (char *fmt, ...);
 void err_quit (char *fmt, ...);
 
-
+#endif
