@@ -1,8 +1,8 @@
-trout: main.c trout.o util.o trout.h
+trout: main.c trout.o util.o trout.h util.h
 	gcc -Wall -o trout main.c trout.o util.o
-trout.o: trout.h trout.c
+trout.o: trout.c trout.h
 	gcc -Wall -c trout.c
-util.o: trout.h util.c
+util.o: util.c util.h
 	gcc -Wall -c util.c
 clean:
 	rm trout util.o trout.o
