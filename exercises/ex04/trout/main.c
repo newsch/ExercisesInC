@@ -1,5 +1,5 @@
 #include "trout.h"
-
+#include "util.h"
 
 Sockaddr *sasend;    /* socket addresses for various purposes */
 Sockaddr *sarecv;

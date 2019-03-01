@@ -1,4 +1,5 @@
 #include "trout.h"
+#include "util.h"
 
 /* other global variables */
 
