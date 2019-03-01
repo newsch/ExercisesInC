@@ -89,6 +89,8 @@ int process_ip (struct ip *ip, int len)
       return 0;
     }
   }
+  // exhausted all options
+  return -4;
 }
 
 /* recv_dgram: reads all incoming datagrams and checks for
@@ -188,7 +190,7 @@ double time_to_double (Timeval *time)
 void print_report ()
 {
   int stat;
-  double rtt, krtt;
+  double rtt;
   char str[NI_MAXHOST];
 
   stat = sock_cmp_addr (sarecv, salast, salen);
@@ -211,7 +213,7 @@ void print_report ()
   sub_tv (recvtv, sendtv, difftv);
   rtt = time_to_double (difftv);
 
-  printf ("  %.3f", time_to_double (difftv));
+  printf ("  %.3f", rtt);
 }
 
 /* send_dgram: generate an outgoing UDP packet */
