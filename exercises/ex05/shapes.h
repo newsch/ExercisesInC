@@ -69,3 +69,5 @@ On the line is in.
 returns: 1 if the point is in the rectangle, else 0
 */
 int point_in_rect(Point *p, Rectangle *rect);
+
+void *check_malloc(int size);
