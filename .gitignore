@@ -2,6 +2,7 @@
 a.out
 *~
 *.py[co]
+**bin/
 
 
 exercises/ex05/data
