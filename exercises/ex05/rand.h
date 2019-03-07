@@ -5,17 +5,17 @@
 */
 
 float my_random_float();
-  
+
 float my_random_float2();
-  
+
 double my_random_double();
-  
+
 float dummy();
-  
+
 float dummy2();
-  
+
 float random_float();
-  
+
+long long int randomll();
+
 float random_double();
-
-

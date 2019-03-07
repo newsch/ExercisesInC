@@ -12,6 +12,10 @@ test1: test1.c rand.o
 	$(CCOMMAND)
 test2: test1.c rand.o
 	$(CCOMMAND)
+test3: test3.c rand.o
+	$(CCOMMAND)
+test4: test4.c rand.o
+	$(CCOMMAND)
 time_rand: time_rand.c rand.o
 	$(CCOMMAND)
 
