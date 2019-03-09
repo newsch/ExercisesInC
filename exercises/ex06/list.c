@@ -80,8 +80,20 @@ void push(Node **list, int val) {
 * returns: number of nodes removed
 */
 int remove_by_value(Node **list, int val) {
-    // FILL THIS IN!
-    return 0;
+    int num_removed = 0;
+    // walk nodes
+    for (Node* n = *list; n && n->next; n = n->next) {
+        if (n->next->val == val) {  // check if next node has the value
+            // remove node from list
+            Node* next = n->next;
+            n->next = next->next;
+
+            free(next);
+            num_removed++;
+            break;
+        }
+    }
+    return num_removed;
 }
 
 
