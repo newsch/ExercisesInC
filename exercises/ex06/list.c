@@ -65,7 +65,8 @@ int pop(Node **list) {
 * val: value to add
 */
 void push(Node **list, int val) {
-    // FILL THIS IN!
+    Node* n = make_node(val, *list);
+    *list = n;
 }
 
 
