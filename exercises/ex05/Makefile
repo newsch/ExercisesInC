@@ -1,23 +1,18 @@
 CC=gcc
 CFLAGS += -Wall
 
-CCOMMAND=$(CC) $(CFLAGS) $^ -o $@
+# CCOMMAND=$(CC) $(CFLAGS) $^ -o $@
 
 shapes: shapes.c
 	$(CCOMMAND)
-test_shapes: test_shapes.c shapes.o
-CCOMMAND = $(CC) $(CFLAGS) $^ -o $@
+test_shapes: shapes.o
+# CCOMMAND = $(CC) $(CFLAGS) $^ -o $@
 
-test1: test1.c rand.o
-	$(CCOMMAND)
-test2: test1.c rand.o
-	$(CCOMMAND)
-test3: test3.c rand.o
-	$(CCOMMAND)
-test4: test4.c rand.o
-	$(CCOMMAND)
+test1: rand.o
+test2: rand.o
+test3: rand.o
+test4: rand.o
 time_rand: time_rand.c rand.o
-	$(CCOMMAND)
 
 %.o: CFLAGS += -c
 %.o: %.c %.h
