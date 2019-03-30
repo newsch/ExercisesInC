@@ -128,6 +128,25 @@ void reverse(Node **list) {
     *list = newhead;
 }
 
+void free_list(Node** list) {
+    if (*list == NULL) {
+        return;
+    }
+    Node* n = *list;
+    Node* next;
+    while (n) {
+        next = n->next;
+        if (next) {
+            free(n);
+            n = next;
+        } else {
+            break;
+        }
+    }
+    // free(*list);
+    *list = NULL;
+}
+
 
 int main() {
     Node *head = make_node(1, NULL);
@@ -151,5 +170,8 @@ int main() {
     print_list(list);
 
     reverse(list);
+    print_list(list);
+
+    free_list(list);
     print_list(list);
 }
