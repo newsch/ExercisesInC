@@ -56,7 +56,12 @@ Subtract a multiple of row j from row i so that the first element
 of row i is 0.
 */
 void reduce_matrix_rows(Matrix *matrix, int i, int j) {
-    // TODO: Fill this in.
+    double* ri = matrix->rows[i];
+    double* rj = matrix->rows[j];
+    double factor = ri[0] / rj[0];
+    for (int k = 0; k < matrix->num_cols; k++) {
+        ri[k] = ri[k] - factor*rj[k];
+    }
 }
 
 int main () {
