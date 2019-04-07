@@ -1,2 +1,2 @@
-foo bar foo foo bar foo bar
-foo bar bar bar bar foo hey
+foo bar foo,foo bar foo bar
+foo bar bar|bar foo hey

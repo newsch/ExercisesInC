@@ -98,6 +98,21 @@ int main(int argc, char** argv) {
         count = handle_word(wordhash, wordbuffer);
         printf("count: %d\n", count);
     }
+
+    GList* keys = g_hash_table_get_keys(wordhash);
+    GList* vals = g_hash_table_get_values(wordhash);
+
+    printf("VALUES:\n");
+    GList *k = keys;
+    GList *v = vals;
+    while (TRUE) {
+        if (k == NULL || v == NULL) {
+            break;
+        }
+        printf("%s: %d\n", (char*) (k->data), *(int*) ((v->data)));
+        k = k->next;
+        v = v->next;
+    }
     // g_hash_table_insert(wordhash, "foo", 5);
     // list = g_list_append(list, "Hello world!");
     // printf("The first item is '%s'\n", (char *) g_list_first(list)->data);
