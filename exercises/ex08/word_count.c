@@ -3,6 +3,7 @@
 
 #include <stdio.h>
 #include <stdlib.h>
+#include <string.h>
 #include <glib.h>
 
 char* SKIPCHARS = " \t\r\n,./()[]{}*\"'";
@@ -12,7 +13,10 @@ char* SKIPCHARS = " \t\r\n,./()[]{}*\"'";
 int handle_word(GHashTable* wordhash, char* word) {
     int* cval = g_hash_table_lookup(wordhash, word);
     if (cval == NULL) {
-        return g_hash_table_insert(wordhash, word, 0);
+        int* new_count = malloc(sizeof(int));
+        *new_count = 1;
+        g_hash_table_insert(wordhash, strdup(word), new_count);
+        return *new_count;
     }
     (*cval)++;
     return *cval;
@@ -81,15 +85,18 @@ int main(int argc, char** argv) {
         exit(1);
     }
 
-    // GHashTable* wordhash = g_hash_table_new(g_str_hash,g_int_equal);
+    GHashTable* wordhash = g_hash_table_new(g_str_hash,g_int_equal);
 
     char wordbuffer[80];
     int numread;
+    int count;
     while ((numread = read_until(fp, wordbuffer, sizeof(wordbuffer), SKIPCHARS)) != EOF) {
         if (numread == sizeof(wordbuffer)) {
             printf("Reached buffer limit.");
         }
         printf("read %d: %s\n", numread, wordbuffer);
+        count = handle_word(wordhash, wordbuffer);
+        printf("count: %d\n", count);
     }
     // g_hash_table_insert(wordhash, "foo", 5);
     // list = g_list_append(list, "Hello world!");
