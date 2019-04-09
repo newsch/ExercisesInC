@@ -1,5 +1,12 @@
 CC=-gcc
 CFLAGS=-Wall
 
-CFLAGS+=$(shell pkg-config --cflags glib-2.0)
-LDLIBS+=$(shell pkg-config --libs glib-2.0)
+# glib flags
+GLIBCFLAGS=$(shell pkg-config --cflags glib-2.0)
+GLIBLDLIBS=$(shell pkg-config --libs glib-2.0)
+
+ex_compile: CFLAGS+=$(GLIBCFLAGS)
+ex_compile: LDLIBS+=$(GLIBLDLIBS)
+
+word_count: CFLAGS+=$(GLIBCFLAGS)
+word_count: LDLIBS+=$(GLIBLDLIBS)
