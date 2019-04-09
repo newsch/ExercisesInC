@@ -1,4 +1,29 @@
 /* Reads a text file and counts the frequency of each word.
+ *
+ * Usage: "./word_count FILE"
+ *
+ * Prints the totals unsorted in the format <COUNT>\t<WORD>. Sorting can be done
+ * with "sort": "./word_count foo.txt | sort -g -r". Punctuation is discarded.
+ *
+ * Output from "New Hacker's Dictionary, The" (https://archive.org/details/jarg422):
+ * ```
+ * $ ./word_count jarg422.txt | sort -r -g | head -n 15
+ * 15217   htm
+ * 15215   jarg422h
+ * 9697    the
+ * 4762    3d
+ * 4498    and
+ * 2638    that
+ * 2378    Node
+ * 2377    Next
+ * 2375    Previous
+ * 2035    for
+ * 1714    The
+ * 1256    with
+ * 1171    from
+ * 1026    are
+ * 1014    this
+ * ```
 */
 
 #include <stdio.h>
@@ -6,14 +31,23 @@
 #include <string.h>
 #include <glib.h>
 
-char* SKIPCHARS = " \t\r\n,./()[]{}*\"'";
+// #define DEBUG
+
+// characters to skip
+char* SKIPCHARS = " \t\r\n,./()[]{}*\"'!@#$%%^&*-_=+\\|~:;<>?";
 
 /* Update or add a word's count to the hashmap.
+ *
+ * Returns: the new count of the word, or -1 on error
 */
 int handle_word(GHashTable* wordhash, char* word) {
     int* cval = g_hash_table_lookup(wordhash, word);
     if (cval == NULL) {
+        // allocate storage for count of new word
         int* new_count = malloc(sizeof(int));
+        if (new_count == NULL) {
+            return -1;
+        }
         *new_count = 1;
         g_hash_table_insert(wordhash, strdup(word), new_count);
         return *new_count;
@@ -24,6 +58,8 @@ int handle_word(GHashTable* wordhash, char* word) {
 
 /* Check if a character is in a string.
  * TODO: check char num value instead of comparing to string.
+ *
+ * Returns: TRUE if c is in str, FALSE if not
 */
 int char_in_str(char c, char* str) {
     for (char* sc = str; *sc; sc++) {
@@ -35,6 +71,11 @@ int char_in_str(char c, char* str) {
 }
 
 /* Read from file into buffer up to any character in toks.
+ *
+ * If a char in toks is read first, reads until it finds a valid character and
+ * then an invalid one.
+ *
+ * Returns: the number of valid characters read (and stored in buffer), or EOF if at EOF
 */
 int read_until(FILE* fp, char* buffer, int bufsize, char* toks) {
     size_t buf_idx = 0;
@@ -59,7 +100,6 @@ int read_until(FILE* fp, char* buffer, int bufsize, char* toks) {
 
         if (at_eof || in_str) {
             // return to finish buffer
-            // buffer[buf_idx] == '\0';
             break;
         }
 
@@ -71,20 +111,15 @@ int read_until(FILE* fp, char* buffer, int bufsize, char* toks) {
     return (int) buf_idx;
 }
 
-/* Read a file and store word counts in wordhash
-*/
-int read_file() {
-    return 0;
-}
-
 int main(int argc, char** argv) {
     FILE* fp = fopen(argv[1], "r");
 
     if (fp == NULL) {
-        perror("fopen");
+        perror("File error");
         exit(1);
     }
 
+    // hash table to store {word: count}
     GHashTable* wordhash = g_hash_table_new(g_str_hash,g_int_equal);
 
     char wordbuffer[80];
@@ -92,29 +127,34 @@ int main(int argc, char** argv) {
     int count;
     while ((numread = read_until(fp, wordbuffer, sizeof(wordbuffer), SKIPCHARS)) != EOF) {
         if (numread == sizeof(wordbuffer)) {
-            printf("Reached buffer limit.");
+            fprintf(stderr, "Reached buffer limit.");
         }
-        printf("read %d: %s\n", numread, wordbuffer);
+        // TODO: convert to lowercase before checking
         count = handle_word(wordhash, wordbuffer);
+        if (count == -1) {
+            perror("handle_word");
+            exit(2);
+        }
+        #ifdef DEBUG
+        printf("read %d: %s\n", numread, wordbuffer);
         printf("count: %d\n", count);
+        #endif
     }
 
+    // print totals
     GList* keys = g_hash_table_get_keys(wordhash);
     GList* vals = g_hash_table_get_values(wordhash);
 
-    printf("VALUES:\n");
     GList *k = keys;
     GList *v = vals;
     while (TRUE) {
         if (k == NULL || v == NULL) {
             break;
         }
-        printf("%s: %d\n", (char*) (k->data), *(int*) ((v->data)));
+        printf("%d\t%s\n", *(int*) (v->data), (char*) (k->data));
         k = k->next;
         v = v->next;
     }
-    // g_hash_table_insert(wordhash, "foo", 5);
-    // list = g_list_append(list, "Hello world!");
-    // printf("The first item is '%s'\n", (char *) g_list_first(list)->data);
+
     return 0;
 }
