@@ -45,7 +45,10 @@ int main(int argc, char *argv[])
     pid_t pid;
 
     for (int i=0; i<num_feeds; i++) {
-        pid = fork();
+        if ((pid = fork()) < 0) {
+            perror("fork");
+        }
+
         if (pid == 0) {  // child process
             sprintf(var, "RSS_FEED=%s", feeds[i]);
             char *vars[] = {var, NULL};
@@ -54,6 +57,21 @@ int main(int argc, char *argv[])
             if (res == -1) {
                 error("Can't run script.");
             }
+        }
+    }
+
+    int status;
+    // await feed processes to finish
+    for (int i = 0; i < num_feeds; i++) {
+        pid = wait(&status);
+        if (pid < 0) {
+            perror("wait");
+            exit(1);
+        }
+        // get exit status of process
+        status = WEXITSTATUS(status);
+        if (status != 0) {
+            fprintf(stderr, "Process %d exited with error code %d.\n", pid, status);
         }
     }
     return 0;
