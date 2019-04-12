@@ -3,6 +3,10 @@
 Downloaded from https://github.com/twcamper/head-first-c
 
 Modified by Allen Downey.
+
+QUESTION ANSWERS:
+
+1. This doesn't work because the `exec` family of functions do not return on success.
 */
 
 #include <stdio.h>
@@ -38,14 +42,18 @@ int main(int argc, char *argv[])
     int num_feeds = 5;
     char *search_phrase = argv[1];
     char var[255];
+    pid_t pid;
 
     for (int i=0; i<num_feeds; i++) {
-        sprintf(var, "RSS_FEED=%s", feeds[i]);
-        char *vars[] = {var, NULL};
+        pid = fork();
+        if (pid == 0) {  // child process
+            sprintf(var, "RSS_FEED=%s", feeds[i]);
+            char *vars[] = {var, NULL};
 
-        int res = execle(PYTHON, PYTHON, SCRIPT, search_phrase, NULL, vars);
-        if (res == -1) {
-            error("Can't run script.");
+            int res = execle(PYTHON, PYTHON, SCRIPT, search_phrase, NULL, vars);
+            if (res == -1) {
+                error("Can't run script.");
+            }
         }
     }
     return 0;
