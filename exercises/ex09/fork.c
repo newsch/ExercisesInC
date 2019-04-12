@@ -3,6 +3,31 @@
 Copyright 2016 Allen B. Downey
 License: MIT License https://opensource.org/licenses/MIT
 
+QUESTION ANSWERS:
+
+1. Thread Diagram:
+
+PARENT
+  |
+"Creating child 0"-------------------------------- CHILD 0
+  |                                                   |
+ fork                                              sleep 0
+  |                                                   |
+"Creating child 1" ----------------- CHILD 1  "Hello from child 0"
+  |                                    |              |
+ fork                               sleep 1    /---< exit
+  |                                    |      /
+"Creating child 2" --- CHILD 2  /------|-----/
+  |             /--------|-----/       |
+wait 0 <-------/      sleep 2   "Hello from child 1"
+  |                      |             |
+wait 1 <-----------------|----------- exit
+  |                      |
+wait 2 <--\              |
+  |        \             |
+exit        \    "Hello from child 2"
+             \           |
+              \-------- exit
 */
 
 #include <stdio.h>
