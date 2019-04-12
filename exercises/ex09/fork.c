@@ -7,6 +7,7 @@ QUESTION ANSWERS:
 
 1. Thread Diagram:
 
+```
 PARENT
   |
 "Creating child 0"-------------------------------- CHILD 0
@@ -28,6 +29,35 @@ wait 2 <--\              |
 exit        \    "Hello from child 2"
              \           |
               \-------- exit
+```
+
+2. What's shared?
+
+I created global, static, main, and allocated values and had each child
+decrement them. None of the children's changes were seen by other children or
+the parent process, so my conclusion is that they are not shared.
+
+```
+Creating child 0.
+Parent: global: 10      static: 10      main: 10        heap: 10
+Creating child 1.
+Parent: global: 10      static: 10      main: 10        heap: 10
+Creating child 2.
+Hello from child 0.
+Child: global: 9        static: 9       main: 9 heap: 9
+Parent: global: 10      static: 10      main: 10        heap: 10
+Hello from the parent.
+Child 17037 exited with error code 0.
+Hello from child 1.
+Child: global: 9        static: 9       main: 9 heap: 9
+Child 17038 exited with error code 1.
+Hello from child 2.
+Child: global: 9        static: 9       main: 9 heap: 9
+Child 17039 exited with error code 2.
+Parent: global: 10      static: 10      main: 10        heap: 10
+Elapsed time = 2.001693 seconds.
+```
+
 */
 
 #include <stdio.h>
@@ -44,6 +74,8 @@ exit        \    "Hello from child 2"
 // error information
 extern int errno;
 
+int globalVal = 10;
+static int staticVal = 10;
 
 // get_seconds returns the number of seconds since the
 // beginning of the day, with microsecond precision
@@ -55,10 +87,15 @@ double get_seconds() {
 }
 
 
-void child_code(int i)
+void child_code(int i, int *mainVal, int *heapVal)
 {
     sleep(i);
     printf("Hello from child %d.\n", i);
+    globalVal--;
+    staticVal--;
+    (*mainVal)--;
+    (*heapVal)--;
+    printf("Child: global: %d\tstatic: %d\tmain: %d\theap: %d\n", globalVal, staticVal, *mainVal, *heapVal);
 }
 
 // main takes two parameters: argc is the number of command-line
@@ -66,6 +103,10 @@ void child_code(int i)
 // line arguments
 int main(int argc, char *argv[])
 {
+    int mainVal = 10;
+    int* heapVal = malloc(sizeof(int));
+    *heapVal = 10;
+
     int status;
     pid_t pid;
     double start, stop;
@@ -97,8 +138,10 @@ int main(int argc, char *argv[])
 
         /* see if we're the parent or the child */
         if (pid == 0) {
-            child_code(i);
+            child_code(i, &mainVal, heapVal);
             exit(i);
+        } else {
+            printf("Parent: global: %d\tstatic: %d\tmain: %d\theap: %d\n", globalVal, staticVal, mainVal, *heapVal);
         }
     }
 
@@ -118,6 +161,7 @@ int main(int argc, char *argv[])
         status = WEXITSTATUS(status);
         printf("Child %d exited with error code %d.\n", pid, status);
     }
+    printf("Parent: global: %d\tstatic: %d\tmain: %d\theap: %d\n", globalVal, staticVal, mainVal, *heapVal);
     // compute the elapsed time
     stop = get_seconds();
     printf("Elapsed time = %f seconds.\n", stop - start);
