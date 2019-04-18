@@ -3,13 +3,20 @@
 Copyright 2014 Allen Downey
 License: GNU GPLv3
 
+
+QUESTION ANSWERS:
+
+counter.c
+
+2. thread diagram
+
 */
 
 #include <stdio.h>
 #include <stdlib.h>
 #include <pthread.h>
 
-#define NUM_CHILDREN 5
+#define NUM_CHILDREN 10000
 
 /* Print an error message and exit.
 */
