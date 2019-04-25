@@ -155,28 +155,39 @@ int main(int argc, char *argv[])
         printf("Waiting for connection on port %d\n", port);
         int connect_d = open_client_socket();
 
-        if (say(connect_d, intro_msg) == -1) {
+        pid_t pid;
+        if ((pid = fork()) == 0) {
+            // child
+            close(listener_d);
+
+            if (say(connect_d, intro_msg) == -1) {
+                close(connect_d);
+                exit(1);
+            }
+
+            read_in(connect_d, buf, sizeof(buf));
+            // TODO (optional): check to make sure they said "Who's there?"
+
+            if (say(connect_d, "Surrealist giraffe.\n") == -1) {
+                close(connect_d);
+                exit(1);
+            }
+
+            read_in(connect_d, buf, sizeof(buf));
+            // TODO (optional): check to make sure they said "Surrealist giraffe who?"
+
+            if (say(connect_d, "Bathtub full of brightly-colored machine tools.\n") == -1) {
+                close(connect_d);
+                exit(1);
+            }
+
+            // close socket and die
             close(connect_d);
-            continue;
-        }
-
-        read_in(connect_d, buf, sizeof(buf));
-        // TODO (optional): check to make sure they said "Who's there?"
-
-        if (say(connect_d, "Surrealist giraffe.\n") == -1) {
+            exit(0);
+        } else {
+            // main process
             close(connect_d);
-            continue;
         }
-
-        read_in(connect_d, buf, sizeof(buf));
-        // TODO (optional): check to make sure they said "Surrealist giraffe who?"
-
-        if (say(connect_d, "Bathtub full of brightly-colored machine tools.\n") == -1) {
-            close(connect_d);
-            continue;
-        }
-
-        close(connect_d);
     }
     return 0;
 }
