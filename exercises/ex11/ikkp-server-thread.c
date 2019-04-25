@@ -14,6 +14,7 @@ Modified by Allen Downey.
 #include <sys/types.h>
 #include <unistd.h>
 #include <signal.h>
+#include <pthread.h>
 
 int listener_d = 0;
 
@@ -133,9 +134,38 @@ int read_in(int socket, char *buf, int len)
 
 char intro_msg[] = "Internet Knock-Knock Protocol Server\nKnock, knock.\n";
 
+void* handle_connection(void* sock_fd_p) {
+    int connect_d = * (int *) sock_fd_p;
+    char buf[255];
+
+    if (say(connect_d, intro_msg) == -1) {
+        close(connect_d);
+        pthread_exit(NULL);
+    }
+
+    read_in(connect_d, buf, sizeof(buf));
+    // TODO (optional): check to make sure they said "Who's there?"
+
+    if (say(connect_d, "Surrealist giraffe.\n") == -1) {
+        close(connect_d);
+        pthread_exit(NULL);
+    }
+
+    read_in(connect_d, buf, sizeof(buf));
+    // TODO (optional): check to make sure they said "Surrealist giraffe who?"
+
+    if (say(connect_d, "Bathtub full of brightly-colored machine tools.\n") == -1) {
+        close(connect_d);
+        pthread_exit(NULL);
+    }
+
+    // close socket and die
+    close(connect_d);
+    pthread_exit(NULL);
+}
+
 int main(int argc, char *argv[])
 {
-    char buf[255];
 
     // set up the signal handler
     if (catch_signal(SIGINT, handle_shutdown) == -1)
@@ -149,45 +179,13 @@ int main(int argc, char *argv[])
     if (listen(listener_d, 10) == -1)
         error("Can't listen");
 
-
-
     while (1) {
         printf("Waiting for connection on port %d\n", port);
+        // TODO: malloc this
         int connect_d = open_client_socket();
 
-        pid_t pid;
-        if ((pid = fork()) == 0) {
-            // child
-            close(listener_d);
-
-            if (say(connect_d, intro_msg) == -1) {
-                close(connect_d);
-                exit(1);
-            }
-
-            read_in(connect_d, buf, sizeof(buf));
-            // TODO (optional): check to make sure they said "Who's there?"
-
-            if (say(connect_d, "Surrealist giraffe.\n") == -1) {
-                close(connect_d);
-                exit(1);
-            }
-
-            read_in(connect_d, buf, sizeof(buf));
-            // TODO (optional): check to make sure they said "Surrealist giraffe who?"
-
-            if (say(connect_d, "Bathtub full of brightly-colored machine tools.\n") == -1) {
-                close(connect_d);
-                exit(1);
-            }
-
-            // close socket and die
-            close(connect_d);
-            exit(0);
-        } else {
-            // main process
-            close(connect_d);
-        }
+        pthread_t thread;
+        pthread_create(&thread, NULL, handle_connection, (void *) &connect_d);
     }
     return 0;
 }
