@@ -55,14 +55,7 @@ int main(int argc, char *argv[])
     char buf[255], rec[256];
 
     /* connect to server */
-    d_sock = open_socket("en.wikipedia.org", "80");
-
-    /* request the resource */
-    sprintf(buf, "GET /wiki/%s http/1.1\r\n", argv[1]);
-    say(d_sock, buf);
-
-    /* send host name and required blank line */
-    say(d_sock, "Host: en.wikipedia.org\r\n\r\n");
+    d_sock = open_socket("localhost", "30000");
 
     /* display page on stdout in 255 byte chunks */
     bytes_received = recv(d_sock, rec, 255, 0);
