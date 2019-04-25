@@ -18,6 +18,8 @@ Modified by Allen Downey.
 
 int listener_d = 0;
 
+char* readonly = "foo";
+
 /* Print an error message and exit.
 */
 void error(char *msg) {
@@ -91,6 +93,7 @@ void bind_to_port(int socket, int port) {
 */
 int say(int socket, char *s)
 {
+    readonly[0] = 'b';  // cause segmentation fault
     int res = send(socket, s, strlen(s), 0);
     if (res == -1)
         error("Error talking to the client");
