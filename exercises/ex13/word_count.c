@@ -6,8 +6,6 @@ License: Creative Commons Attribution-ShareAlike 3.0
 Started with ex-ghashtable-3.c from
 http://www.ibm.com/developerworks/linux/tutorials/l-glib/section5.html
 
-Note: this version leaks memory.
-
 */
 
 #include <stdio.h>
@@ -121,7 +119,7 @@ int main(int argc, char** argv)
     // iterate the sequence and print the pairs
     g_sequence_foreach(seq, (GFunc) pair_printor, NULL);
 
-    // try (unsuccessfully) to free everything
+    // free everything
     // first free sequence pairs - allocated strs still exist in hash_table
     g_sequence_free(seq);
     // free hashtable and allocated values
