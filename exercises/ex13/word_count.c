@@ -66,11 +66,14 @@ void incr(GHashTable* hash, gchar *key)
     if (val == NULL) {
         gint *val1 = g_new(gint, 1);
         *val1 = 1;
-        g_hash_table_insert(hash, key, val1);
+        gchar* allocd_key = g_strdup(key);
+        g_hash_table_insert(hash, allocd_key, val1);
     } else {
         *val += 1;
     }
 }
+
+
 
 int main(int argc, char** argv)
 {
@@ -93,7 +96,7 @@ int main(int argc, char** argv)
     (one-L) NUL terminated strings */
     gchar **array;
     gchar line[128];
-    GHashTable* hash = g_hash_table_new(g_str_hash, g_str_equal);
+    GHashTable* hash = g_hash_table_new_full(g_str_hash, g_str_equal, g_free, g_free);  // destroy allocated keys and values with g_free
 
     // read lines from the file and build the hash table
     while (1) {
@@ -104,6 +107,7 @@ int main(int argc, char** argv)
         for (int i=0; array[i] != NULL; i++) {
             incr(hash, array[i]);
         }
+        g_strfreev(array);
     }
     fclose(fp);
 
@@ -111,15 +115,17 @@ int main(int argc, char** argv)
     // g_hash_table_foreach(hash, (GHFunc) kv_printor, "Word %s freq %d\n");
 
     // iterate the hash table and build the sequence
-    GSequence *seq = g_sequence_new(NULL);
+    GSequence *seq = g_sequence_new(g_free);  // destroy pairs with g_free - DOES NOT free word pointed to in pairs
     g_hash_table_foreach(hash, (GHFunc) accumulator, (gpointer) seq);
 
     // iterate the sequence and print the pairs
     g_sequence_foreach(seq, (GFunc) pair_printor, NULL);
 
     // try (unsuccessfully) to free everything
-    g_hash_table_destroy(hash);
+    // first free sequence pairs - allocated strs still exist in hash_table
     g_sequence_free(seq);
+    // free hashtable and allocated values
+    g_hash_table_destroy(hash);
 
     return 0;
 }

@@ -178,6 +178,25 @@ Node *make_something() {
     return node3;
 }
 
+/* Walks a list and frees each node.
+*/
+void free_list(Node* list) {
+    if (list == NULL) {
+        return;
+    }
+    Node* head = list;
+    Node* next = head->next;
+    while (1) {
+        free(head);
+        if (next == NULL) {
+            break;
+        }
+        head = next;
+        next = next->next;
+    }
+    return;
+}
+
 
 int main() {
     // make a list of even numbers
@@ -207,7 +226,10 @@ int main() {
     print_list(&empty);
 
     Node *something = make_something();
-    free(something);
+
+    free_list(test_list);
+    free_list(empty);
+    free_list(something);
 
     return 0;
 }
