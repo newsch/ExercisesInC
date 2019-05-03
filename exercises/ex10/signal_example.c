@@ -20,6 +20,8 @@ Based on an example in Head First C.
 
 int score = 0;
 
+int continue_game = 1;  // flag to control game
+
 /* Set up a signal handler.
 
    sig: signal number
@@ -45,7 +47,8 @@ void end_game(int sig)
 */
 void times_up(int sig) {
     puts("\nTIME'S UP!");
-    raise(SIGINT);
+    // raise(SIGINT);
+    continue_game = 0;  // stop game loop
 }
 
 int main(void) {
@@ -61,7 +64,7 @@ int main(void) {
     // seed the random number generator
     srandom((unsigned int) time(NULL));
 
-    while(1) {
+    while(continue_game) {
         // pose the question
         a = rand() % 11;
         b = rand() % 11;
@@ -72,6 +75,10 @@ int main(void) {
 
         // get the answer
 	    char *ret = fgets(txt, 4, stdin);
+        if (ret == NULL && errno) {
+            // perror("fgets returned NULL");
+            char *ret = fgets(txt, 4, stdin);
+        }
         answer = atoi(txt);
 
         // check the answer
